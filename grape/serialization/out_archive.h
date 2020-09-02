@@ -141,7 +141,7 @@ class OutArchive {
 };
 
 template <typename T,
-          typename std::enable_if<std::is_pod<T>::value, T>::type* = nullptr>
+    typename std::enable_if<std::is_pod<T>::value, T>::type* = nullptr>
 inline OutArchive& operator>>(OutArchive& out_archive, T& u) {
   u = *reinterpret_cast<T*>(out_archive.GetBytes(sizeof(T)));
   return out_archive;
@@ -150,6 +150,7 @@ inline OutArchive& operator>>(OutArchive& out_archive, T& u) {
 inline OutArchive& operator>>(OutArchive& out_archive, EmptyType&) {
   return out_archive;
 }
+
 
 inline OutArchive& operator>>(OutArchive& out_archive, std::string& str) {
   size_t size;
@@ -177,7 +178,7 @@ inline OutArchive& operator>>(OutArchive& out_archive,
 }
 
 template <typename T,
-          typename std::enable_if<std::is_pod<T>::value, T>::type* = nullptr>
+    typename std::enable_if<std::is_pod<T>::value, T>::type* = nullptr>
 inline OutArchive& operator>>(OutArchive& out_archive, std::vector<T>& vec) {
   size_t size;
   out_archive >> size;
@@ -187,7 +188,7 @@ inline OutArchive& operator>>(OutArchive& out_archive, std::vector<T>& vec) {
 }
 
 template <typename T, typename ALLOC_T,
-          typename std::enable_if<!std::is_pod<T>::value, T>::type* = nullptr>
+    typename std::enable_if<!std::is_pod<T>::value, T>::type* = nullptr>
 inline OutArchive& operator>>(OutArchive& out_archive,
                               std::vector<T, ALLOC_T>& vec) {
   size_t size;
@@ -209,7 +210,7 @@ inline OutArchive& operator>>(OutArchive& out_archive,
 }
 
 template <typename T, typename ALLOC_T,
-          typename std::enable_if<std::is_pod<T>::value, T>::type* = nullptr>
+    typename std::enable_if<std::is_pod<T>::value, T>::type* = nullptr>
 inline OutArchive& operator>>(OutArchive& out_archive, Array<T, ALLOC_T>& vec) {
   size_t size;
   out_archive >> size;
@@ -219,7 +220,7 @@ inline OutArchive& operator>>(OutArchive& out_archive, Array<T, ALLOC_T>& vec) {
 }
 
 template <typename T, typename ALLOC_T,
-          typename std::enable_if<!std::is_pod<T>::value, T>::type* = nullptr>
+    typename std::enable_if<!std::is_pod<T>::value, T>::type* = nullptr>
 inline OutArchive& operator>>(OutArchive& out_archive, Array<T, ALLOC_T>& vec) {
   size_t size;
   out_archive >> size;
@@ -307,6 +308,12 @@ inline OutArchive& operator>>(OutArchive& out_archive,
     out_archive >> key >> value;
     m.emplace(key, value);
   }
+  return out_archive;
+}
+
+inline OutArchive& operator>>(OutArchive& out_archive, OthVert& vert) {
+  out_archive >> vert.label_;
+  out_archive >> vert.attrs_;
   return out_archive;
 }
 

@@ -17,6 +17,8 @@ limitations under the License.
 #define GRAPE_IO_LINE_PARSER_BASE_H_
 
 #include <string>
+#include <vector>
+#include <boost/algorithm/string.hpp>
 
 namespace grape {
 
@@ -66,6 +68,23 @@ namespace internal {
 // return the next position after char sequence that consumed by the matcher.
 template <typename T>
 inline const char* match(char const* str, T& r, char const* end = nullptr);
+
+template <>
+inline const char* match(char const* str, grape::OthVert &r, char const*){
+  char* match_end;
+  OthVert tmpV;
+  tmpV.label_ = std::strtol(str, &match_end, 10);
+  std::string tmpStr (match_end);
+  std::vector<std::string> tmpAttr;
+  boost::split(tmpAttr, tmpStr, boost::is_any_of(" "));
+  for(auto& item:tmpAttr){
+    if(item == "" || item =="\n") continue;
+    boost::trim(item);
+    tmpV.attrs_.emplace_back(item);
+  }
+  r = tmpV;
+  return match_end;
+}
 
 template <>
 inline const char* match<int32_t>(char const* str, int32_t& r, char const*) {
@@ -122,12 +141,12 @@ inline const char* match<std::string>(char const* str, std::string& r,
                                       char const* end) {
   int nlen1 = 0, nlen2 = 0;
   while (str + nlen1 != end && str[nlen1] &&
-         (str[nlen1] == ' ' || str[nlen1] == '\t')) {
+      (str[nlen1] == ' ' || str[nlen1] == '\t')) {
     nlen1 += 1;
   }
   nlen2 = nlen1;
   while (str + nlen2 != end && str[nlen2] &&
-         (str[nlen2] != ' ' && str[nlen2] != '\t')) {
+      (str[nlen2] != ' ' && str[nlen2] != '\t')) {
     nlen2 += 1;
   }
   r = std::string(str + nlen1, nlen2 - nlen1);

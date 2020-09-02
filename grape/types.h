@@ -29,6 +29,16 @@ namespace grape {
  */
 struct EmptyType {};
 
+struct OthVert{
+  //int id;
+
+  int32_t label_;
+  //std::string label_;
+  //std::string attrs_; //node label
+  std::vector<std::string> attrs_;
+
+};
+
 inline std::ostream& operator<<(std::ostream& out, const EmptyType) {
   return out;
 }
@@ -36,8 +46,8 @@ inline std::istream& operator>>(std::istream& in, EmptyType) { return in; }
 
 template <typename E>
 using enable_enum_t =
-    typename std::enable_if<std::is_enum<E>::value,
-                            typename std::underlying_type<E>::type>::type;
+typename std::enable_if<std::is_enum<E>::value,
+                        typename std::underlying_type<E>::type>::type;
 
 template <typename E>
 constexpr inline enable_enum_t<E> underlying_value(E e) noexcept {
@@ -83,35 +93,35 @@ enum class MessageStrategy {
 template <typename APP_T, typename GRAPH_T>
 constexpr inline bool check_load_strategy_compatible() {
   return ((APP_T::load_strategy == LoadStrategy::kBothOutIn) &&
-          (GRAPH_T::load_strategy == LoadStrategy::kBothOutIn)) ||
-         ((APP_T::load_strategy == LoadStrategy::kOnlyIn) &&
+      (GRAPH_T::load_strategy == LoadStrategy::kBothOutIn)) ||
+      ((APP_T::load_strategy == LoadStrategy::kOnlyIn) &&
           ((GRAPH_T::load_strategy == LoadStrategy::kBothOutIn) ||
-           (GRAPH_T::load_strategy == LoadStrategy::kOnlyIn))) ||
-         ((APP_T::load_strategy == LoadStrategy::kOnlyOut) &&
+              (GRAPH_T::load_strategy == LoadStrategy::kOnlyIn))) ||
+      ((APP_T::load_strategy == LoadStrategy::kOnlyOut) &&
           ((GRAPH_T::load_strategy == LoadStrategy::kBothOutIn) ||
-           (GRAPH_T::load_strategy == LoadStrategy::kOnlyOut)));
+              (GRAPH_T::load_strategy == LoadStrategy::kOnlyOut)));
 }
 
 template <typename APP_T, typename GRAPH_T>
 constexpr inline bool check_message_strategy_valid() {
   return ((APP_T::message_strategy ==
-           MessageStrategy::kAlongEdgeToOuterVertex) &&
-          (GRAPH_T::load_strategy == LoadStrategy::kBothOutIn)) ||
-         ((APP_T::message_strategy ==
-           MessageStrategy::kAlongIncomingEdgeToOuterVertex) &&
+      MessageStrategy::kAlongEdgeToOuterVertex) &&
+      (GRAPH_T::load_strategy == LoadStrategy::kBothOutIn)) ||
+      ((APP_T::message_strategy ==
+          MessageStrategy::kAlongIncomingEdgeToOuterVertex) &&
           ((GRAPH_T::load_strategy == LoadStrategy::kOnlyIn) ||
-           (GRAPH_T::load_strategy == LoadStrategy::kBothOutIn))) ||
-         ((APP_T::message_strategy ==
-           MessageStrategy::kAlongOutgoingEdgeToOuterVertex) &&
+              (GRAPH_T::load_strategy == LoadStrategy::kBothOutIn))) ||
+      ((APP_T::message_strategy ==
+          MessageStrategy::kAlongOutgoingEdgeToOuterVertex) &&
           ((GRAPH_T::load_strategy == LoadStrategy::kOnlyOut) ||
-           (GRAPH_T::load_strategy == LoadStrategy::kBothOutIn))) ||
-         (APP_T::message_strategy == MessageStrategy::kSyncOnOuterVertex);
+              (GRAPH_T::load_strategy == LoadStrategy::kBothOutIn))) ||
+      (APP_T::message_strategy == MessageStrategy::kSyncOnOuterVertex);
 }
 
 template <typename APP_T, typename GRAPH_T>
 constexpr inline bool check_app_fragment_consistency() {
   return check_load_strategy_compatible<APP_T, GRAPH_T>() &&
-         check_message_strategy_valid<APP_T, GRAPH_T>();
+      check_message_strategy_valid<APP_T, GRAPH_T>();
 }
 
 }  // namespace grape

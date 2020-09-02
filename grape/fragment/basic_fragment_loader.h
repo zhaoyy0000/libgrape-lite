@@ -45,7 +45,7 @@ inline bool compare_by_id(const internal::Vertex<OID_T, VDATA_T>& lhs,
 }
 
 template <typename FRAG_T, typename PARTITIONER_T, typename IOADAPTOR_T,
-          typename Enable = void>
+    typename Enable = void>
 class BasicFragmentLoader;
 
 /**
@@ -149,7 +149,7 @@ class BasicFragmentLoader<
   bool SerializeFragment(std::shared_ptr<fragment_t>& fragment,
                          const std::string& serialization_prefix) {
     if (comm_spec_.worker_id() == 0) {
-      vm_ptr_->Serialize(serialization_prefix);
+      vm_ptr_->template Serialize<IOADAPTOR_T>(serialization_prefix);
     }
 
     MPI_Barrier(comm_spec_.comm());
@@ -163,10 +163,10 @@ class BasicFragmentLoader<
     snprintf(serial_file, sizeof(serial_file), "%s/%s",
              serialization_prefix.c_str(), kSerializationVertexMapFilename);
     if (comm_spec_.local_id() == 0 && !exists_file(serial_file)) {
-      vm_ptr_->Serialize(serialization_prefix);
+      vm_ptr_->template Serialize<IOADAPTOR_T>(serialization_prefix);
     }
 
-    fragment->Serialize(serialization_prefix);
+    fragment->template Serialize<IOADAPTOR_T>(serialization_prefix);
 
     return true;
   }
@@ -176,9 +176,9 @@ class BasicFragmentLoader<
     auto io_adaptor =
         std::unique_ptr<IOADAPTOR_T>(new IOADAPTOR_T(deserialization_prefix));
     if (io_adaptor->IsExist()) {
-      vm_ptr_->Deserialize(deserialization_prefix);
+      vm_ptr_->template Deserialize<IOADAPTOR_T>(deserialization_prefix);
       fragment = std::shared_ptr<fragment_t>(new fragment_t(vm_ptr_));
-      fragment->Deserialize(deserialization_prefix, comm_spec_.fid());
+      fragment->template Deserialize<IOADAPTOR_T>(deserialization_prefix, comm_spec_.fid());
     }
     return true;
   }
@@ -280,7 +280,8 @@ class BasicFragmentLoader<
       vid_t gid;
       for (auto& id : id_list) {
         if (vm_ptr_->AddVertex(fid, id, gid)) {
-          vertices.emplace_back(gid, data_list[index]);
+          //vertices.emplace_back(gid, data_list[index]);
+          vertices.emplace_back(gid,data_list[index]);
         }
         ++index;
       }
@@ -662,7 +663,7 @@ class BasicFragmentLoader<
       std::atomic<size_t> current_work_unit(0);
       int thread_num =
           (std::thread::hardware_concurrency() + comm_spec_.local_num() - 1) /
-          comm_spec_.local_num();
+              comm_spec_.local_num();
       std::vector<std::thread> process_threads(thread_num);
       for (int tid = 0; tid < thread_num; ++tid) {
         process_threads[tid] = std::thread([&]() {

@@ -72,6 +72,7 @@ class SSSP : public ParallelAppBase<FRAG_T, SSSPContext<FRAG_T>>,
       for (auto& e : es) {
         vertex_t v = e.neighbor;
         ctx.partial_result[v] = std::min(ctx.partial_result[v], e.data);
+        //LOG(INFO) << " the vertex " << v.GetValue() << "  " << frag.GetData(v).label_ << "  "<<frag.GetData(v).attrs_[0];
         if (frag.IsOuterVertex(v)) {
           // put the message to the channel.
           channel_0.SyncStateOnOuterVertex<fragment_t, double>(

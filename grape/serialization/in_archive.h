@@ -83,7 +83,7 @@ class InArchive {
 };
 
 template <typename T,
-          typename std::enable_if<std::is_pod<T>::value, T>::type* = nullptr>
+    typename std::enable_if<std::is_pod<T>::value, T>::type* = nullptr>
 inline InArchive& operator<<(InArchive& in_archive, T u) {
   in_archive.AddBytes(&u, sizeof(T));
   return in_archive;
@@ -119,7 +119,7 @@ inline InArchive& operator<<(InArchive& in_archive,
 }
 
 template <typename T,
-          typename std::enable_if<std::is_pod<T>::value, T>::type* = nullptr>
+    typename std::enable_if<std::is_pod<T>::value, T>::type* = nullptr>
 inline InArchive& operator<<(InArchive& in_archive, const std::vector<T>& vec) {
   size_t size = vec.size();
   in_archive << size;
@@ -128,7 +128,7 @@ inline InArchive& operator<<(InArchive& in_archive, const std::vector<T>& vec) {
 }
 
 template <typename T, typename ALLOC_T,
-          typename std::enable_if<!std::is_pod<T>::value, T>::type* = nullptr>
+    typename std::enable_if<!std::is_pod<T>::value, T>::type* = nullptr>
 inline InArchive& operator<<(InArchive& in_archive,
                              const std::vector<T, ALLOC_T>& vec) {
   size_t size = vec.size();
@@ -148,7 +148,7 @@ inline InArchive& operator<<(InArchive& in_archive,
 }
 
 template <typename T, typename ALLOC_T,
-          typename std::enable_if<std::is_pod<T>::value, T>::type* = nullptr>
+    typename std::enable_if<std::is_pod<T>::value, T>::type* = nullptr>
 inline InArchive& operator<<(InArchive& in_archive,
                              const Array<T, ALLOC_T>& vec) {
   size_t size = vec.size();
@@ -158,7 +158,7 @@ inline InArchive& operator<<(InArchive& in_archive,
 }
 
 template <typename T, typename ALLOC_T,
-          typename std::enable_if<!std::is_pod<T>::value, T>::type* = nullptr>
+    typename std::enable_if<!std::is_pod<T>::value, T>::type* = nullptr>
 inline InArchive& operator<<(InArchive& in_archive,
                              const Array<T, ALLOC_T>& vec) {
   size_t size = vec.size();
@@ -230,6 +230,12 @@ inline InArchive& operator<<(InArchive& in_archive,
   return in_archive;
 }
 
+
+inline InArchive& operator<<(InArchive& in_archive, const OthVert& vert) {
+  in_archive << vert.label_;
+  in_archive << vert.attrs_;
+  return in_archive;
+}
 }  // namespace grape
 
 #endif  // GRAPE_SERIALIZATION_IN_ARCHIVE_H_
